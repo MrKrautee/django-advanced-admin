@@ -1,0 +1,22 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+{% block content %}
+{% if notifications %}
+<div id="notifications">
+<h3>Notifications</h3>
+<ul class="list-group">
+                {% for msg in notifications %}
+                <li class="list-group-item">
+                    <small>
+                    <a href="{% url "admin:app_list" msg.app_label %}">
+                        {{ msg.app_label|capfirst }}</a>:<a href= "{% url
+                        "admin:"|add:msg.app_label|add:"_"|add:msg.model_name|add:"_changelist"
+                        %}">{{ msg.model_name|capfirst }}</a>&gt;</small>
+                    <a href="{{ msg.url }}">{{ msg.msg }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+</div>
+{% endif %}
+{{ block.super }}
+{% endblock %}
