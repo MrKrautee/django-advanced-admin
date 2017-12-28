@@ -34,25 +34,44 @@ Installation
 
 Usage
 =====
-importing advanced admin
+The extra context variables you add here, can be accessed 
+in the views template.
+Directory: django/contrib/admin/templates:
+* index_view: index.html
+* app_index_view: app_index.html
 
-::
-    from advanced_admin import admin_site
+importing advanced admin
+    ::
+        from advanced_admin import admin_site
 
     
 Register additional content for index_view
 ------------------------------------------
-
-
+    ::
+        def additional_index_content(response):
+            return {
+                    'bla': 'blub',
+                    'my': 'extra',
+                    'ex': 'ample',
+                    }
+        admin_site.register_index_extra(additional_index_content)
+        
 Register additional content for app_index_view
 ----------------------------------------------
+Registering extra content could be look like this, 
+in your <app-label> admin.py. Replace <app_label> 
+with your app.
+    ::
+        def app_index(resonse):
+            return { 'extra': 'extra content bka bkub', }
+        
+        admin_site.register_app_index_extra('<app-label>', app_index)
 
 
 Register notifications index_view
 ---------------------------------
 for example we have BlogEntries with Comments. We want to 
 show up an notification in admin index for each new Comment.
-
 ::
     def msg_new_comment(request):
         comments_qs = Comment.objects.get_unapproved()
@@ -66,3 +85,11 @@ show up an notification in admin index for each new Comment.
             return {'msg': msg, 'url': url}
         return None
     admin_site.register_notification(Comment, msg_new_comment)
+    
+Access registered context 
+-------------------------
+The extra context variables you add here, can be accessed 
+in the views template.
+Directory: django/contrib/admin/templates:
+* index_view: index.html
+* app_index_view: app_index.html
