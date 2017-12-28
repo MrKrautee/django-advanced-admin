@@ -118,5 +118,8 @@ in the views templates. They are located in ``../django/contrib/admin/templates/
 * index_view: ``index.html``
 * app_index_view: ``app_index.html``
 
+Access Notifications 
+--------------------
+
 For notifications there is an default template in this porject.
 See ``django-advanced-admin/advanced_admin/templates/admin/index.html``
