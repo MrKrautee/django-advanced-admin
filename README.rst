@@ -2,7 +2,8 @@
 Django Advanced Admin   
 =====================
 
-Adds extra context to ``admin:index`` and ``admin:app_index``. You can still use the 'normal' admin site
+Adds extra context to ``admin:index`` and ``admin:app_index``. 
+You can still use the 'normal' admin site
 for registering models. So there is no need to change admin.py for existing apps.
 
 It fowards all calls to the 'normal' admin.site if it self has no matching
@@ -116,3 +117,6 @@ in the views templates. They are located in ``../django/contrib/admin/templates/
 
 * index_view: ``index.html``
 * app_index_view: ``app_index.html``
+
+For notifications there is an default template in this porject.
+See ``django-advanced-admin/advanced_admin/templates/admin/index.html``
