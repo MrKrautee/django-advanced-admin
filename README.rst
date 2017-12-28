@@ -11,14 +11,14 @@ attribute or method (__getattr__).
 Features
 ========
 
-* add context to app_index view, each app can add its own context.
-* add context to index_view
-* add notifications to index_view
+* add context to ``app_index_view``, each app can add its own context.
+* add context to ``index_view``
+* add notifications to ``index_view``
     
 Installation
 ============
 
-Instead of 'normal' AdminSite import advanced admin in urls.py.
+Instead of 'normal' AdminSite import advanced admin in ``urls.py``.
 Use it like 'normal' admin.site:
 
 ::
@@ -29,7 +29,7 @@ Use it like 'normal' admin.site:
         url(r'^admin/', admin_site.urls),
     ]
     
-No need to register any ModelAdmin to advanced_admin.admin.admin_site.
+No need to register any ModelAdmin to advanced_admin.admin_site.
 You can still use the normal admin.site to register your ModelAdmins:
 
 ::
@@ -100,5 +100,5 @@ The extra context variables you add here, can be accessed
 in the views template.
 Directory: django/contrib/admin/templates:
 
- * index_view: index.html
- * app_index_view: app_index.html
+* index_view: ``index.html``
+* app_index_view: ``app_index.html``
