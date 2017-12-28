@@ -11,32 +11,32 @@ attribute or method (__getattr__).
 Features
 ========
 
-    * add context to app_index view, each app can add its own context.
-    * add context to index_view
-    * add notifications to index_view
+ * add context to app_index view, each app can add its own context.
+ * add context to index_view
+ * add notifications to index_view
     
 Installation
 ============
-    Instead of 'normal' AdminSite import advanced admin in urls.py.
-    Use it like 'normal' admin.site:
-    ::
-        from django.conf.urls import url
-        form advanced_admin.admin import admin_site
-        urlpatterns = [
-            url(r'^admin/', admin_site.urls),
-        ]
-        
-    No need to register any ModelAdmin to advanced_admin.admin.admin_site.
-    You can still use the normal admin.site to register your ModelAdmins:
-    ::
-        from django.contrib.admin import site
-        site.register(MyModel, MyModelAdmin)
+Instead of 'normal' AdminSite import advanced admin in urls.py.
+Use it like 'normal' admin.site:
+::
+    from django.conf.urls import url
+    form advanced_admin.admin import admin_site
+    urlpatterns = [
+        url(r'^admin/', admin_site.urls),
+    ]
+    
+No need to register any ModelAdmin to advanced_admin.admin.admin_site.
+You can still use the normal admin.site to register your ModelAdmins:
+::
+    from django.contrib.admin import site
+    site.register(MyModel, MyModelAdmin)
 
 Usage
 =====    
 Register additional content for index_view
 ------------------------------------------
-
+you may register some extra context in your admin.py:
 ::
     from advanced_admin import admin_site
     def additional_index_content(response):
@@ -51,7 +51,7 @@ Register additional content for app_index_view
 ----------------------------------------------
 Registering extra content could be look like this, 
 in your <app-label> admin.py. Replace <app_label> 
-with your app.
+with your apps label.
 ::
     def app_index(resonse):
         return { 'extra': 'extra content bka bkub', }
@@ -83,5 +83,5 @@ The extra context variables you add here, can be accessed
 in the views template.
 Directory: django/contrib/admin/templates:
 
-    * index_view: index.html
-    * app_index_view: app_index.html
+ * index_view: index.html
+ * app_index_view: app_index.html
