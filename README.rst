@@ -36,6 +36,7 @@ Usage
 =====    
 Register additional content for index_view
 ------------------------------------------
+
 ::
     from advanced_admin import admin_site
     def additional_index_content(response):
@@ -81,5 +82,6 @@ Access registered context
 The extra context variables you add here, can be accessed 
 in the views template.
 Directory: django/contrib/admin/templates:
-* index_view: index.html
-* app_index_view: app_index.html
+
+    * index_view: index.html
+    * app_index_view: app_index.html
