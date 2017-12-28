@@ -73,7 +73,7 @@ with your apps label.
     admin_site.register_app_index_extra('<app-label>', app_index)
 
 
-Register notifications index_view
+Register notifications in index_view
 ---------------------------------
 
 for example we have BlogEntries with Comments. We want to 
@@ -99,8 +99,7 @@ Access registered context
 -------------------------
 
 The extra context variables you add here, can be accessed 
-in the views template.
-Directory: django/contrib/admin/templates:
+in the views templates. They are located in ../django/contrib/admin/templates/admin/
 
 * index_view: ``index.html``
 * app_index_view: ``app_index.html``
