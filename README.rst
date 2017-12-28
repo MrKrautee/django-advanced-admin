@@ -25,8 +25,11 @@ Use it like 'normal' admin.site:
 
 ::
 
+    # /my/project/project/urls.py
+
     from django.conf.urls import url
     form advanced_admin.admin import admin_site
+    
     urlpatterns = [
         url(r'^admin/', admin_site.urls),
     ]
@@ -48,9 +51,11 @@ Register additional content for index_view
 you may register some extra context in your admin.py:
 
 ::
+    
+    # /my/project/mypp/admin.py
 
-    # /my/project/project/urls.py
     from advanced_admin import admin_site
+    
     def additional_index_content(response):
         return {
                 'bla': 'blub',
@@ -69,7 +74,9 @@ in your <app-label> admin.py. Here <app_label> is 'myapp'.
 ::
 
     # /my/project/myapp/admin.py
+    
     from advanced_admin import admin_site
+    
     def app_index(resonse):
         return { 'extra': 'extra content bka bkub', }
     
@@ -85,7 +92,9 @@ show up an notification in admin index for each new Comment.
 ::
 
     # /my/project/blog/admin.py
+    
     from advanced_admin import admin_site
+    
     def msg_new_comment(request):
         comments_qs = Comment.objects.get_unapproved()
         comments_count = comments_qs.count()
