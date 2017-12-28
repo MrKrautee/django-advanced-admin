@@ -1,12 +1,14 @@
-======================================
-Django Advanced Admin - Version: alpha  
-======================================
+=====================
+Django Advanced Admin   
+=====================
 
-Adds funtionality to the 'normal' admin. BUt you can use the 'normal' admin
-for registering models. So there is no need to change admin.py from
-existing apps.
-It fowards all calls to the 'normal' admin if it self has no matching
+Adds extra context to ``admin:index`` and ``admin:app_index``. You can still use the 'normal' admin site
+for registering models. So there is no need to change admin.py for existing apps.
+
+It fowards all calls to the 'normal' admin.site if it self has no matching
 attribute or method (__getattr__).
+
+Version: very alpha
 
 Features
 ========
@@ -29,8 +31,8 @@ Use it like 'normal' admin.site:
         url(r'^admin/', admin_site.urls),
     ]
     
-No need to register any ModelAdmin to advanced_admin.admin_site.
-You can still use the normal admin.site to register your ModelAdmins:
+No need to register any ModelAdmin to ``advanced_admin.admin_site``.
+You can still use the normal ``admin.site`` to register your ModelAdmin:
 
 ::
 
@@ -99,7 +101,7 @@ Access registered context
 -------------------------
 
 The extra context variables you add here, can be accessed 
-in the views templates. They are located in ../django/contrib/admin/templates/admin/
+in the views templates. They are located in ``../django/contrib/admin/templates/admin/``
 
 * index_view: ``index.html``
 * app_index_view: ``app_index.html``
