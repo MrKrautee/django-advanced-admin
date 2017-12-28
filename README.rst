@@ -11,15 +11,18 @@ attribute or method (__getattr__).
 Features
 ========
 
- * add context to app_index view, each app can add its own context.
- * add context to index_view
- * add notifications to index_view
+* add context to app_index view, each app can add its own context.
+* add context to index_view
+* add notifications to index_view
     
 Installation
 ============
+
 Instead of 'normal' AdminSite import advanced admin in urls.py.
 Use it like 'normal' admin.site:
+
 ::
+
     from django.conf.urls import url
     form advanced_admin.admin import admin_site
     urlpatterns = [
@@ -28,16 +31,22 @@ Use it like 'normal' admin.site:
     
 No need to register any ModelAdmin to advanced_admin.admin.admin_site.
 You can still use the normal admin.site to register your ModelAdmins:
+
 ::
+
     from django.contrib.admin import site
     site.register(MyModel, MyModelAdmin)
 
 Usage
 =====    
+
 Register additional content for index_view
 ------------------------------------------
+
 you may register some extra context in your admin.py:
+
 ::
+
     from advanced_admin import admin_site
     def additional_index_content(response):
         return {
@@ -46,13 +55,17 @@ you may register some extra context in your admin.py:
                 'ex': 'ample',
                 }
     admin_site.register_index_extra(additional_index_content)
-        
+    
+    
 Register additional content for app_index_view
 ----------------------------------------------
+
 Registering extra content could be look like this, 
 in your <app-label> admin.py. Replace <app_label> 
 with your apps label.
+
 ::
+
     def app_index(resonse):
         return { 'extra': 'extra content bka bkub', }
     
@@ -61,9 +74,12 @@ with your apps label.
 
 Register notifications index_view
 ---------------------------------
+
 for example we have BlogEntries with Comments. We want to 
 show up an notification in admin index for each new Comment.
+
 ::
+
     def msg_new_comment(request):
         comments_qs = Comment.objects.get_unapproved()
         comments_count = comments_qs.count()
@@ -79,6 +95,7 @@ show up an notification in admin index for each new Comment.
     
 Access registered context 
 -------------------------
+
 The extra context variables you add here, can be accessed 
 in the views template.
 Directory: django/contrib/admin/templates:
