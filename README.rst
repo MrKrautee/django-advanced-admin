@@ -48,7 +48,7 @@ Register additional content for index_view
 you may register some extra context in your admin.py:
 
 ::
-
+    # /my/project/project/urls.py
     from advanced_admin import admin_site
     def additional_index_content(response):
         return {
@@ -63,16 +63,15 @@ Register additional content for app_index_view
 ----------------------------------------------
 
 Registering extra content could be look like this, 
-in your <app-label> admin.py. Replace <app_label> 
-with your apps label.
+in your <app-label> admin.py. Here <app_label> is 'myapp'.
 
 ::
-
+    # /my/project/myapp/admin.py
     from advanced_admin import admin_site
     def app_index(resonse):
         return { 'extra': 'extra content bka bkub', }
     
-    admin_site.register_app_index_extra('<app-label>', app_index)
+    admin_site.register_app_index_extra('myapp', app_index)
 
 
 Register notifications in index_view
@@ -82,7 +81,7 @@ for example we have BlogEntries with Comments. We want to
 show up an notification in admin index for each new Comment.
 
 ::
-
+    # /my/project/blog/admin.py
     from advanced_admin import admin_site
     def msg_new_comment(request):
         comments_qs = Comment.objects.get_unapproved()
