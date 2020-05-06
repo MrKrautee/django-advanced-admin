@@ -21,6 +21,23 @@ Features
 Installation
 ============
 
+Add ``advanced_admin`` to ``INSTALLED_APPS`` in your projects ``settings.py``.
+Be sure you place it before ``django.contrib.admin``. Otherwise the custom
+``index.html`` template, used for the notifications will not be loaded.
+
+::
+    # my_project/my_project/settings.py
+    .
+    .
+    .
+    INSTALLED_APPS = [
+        # ... other apps 
+        'advanced_admin.apps.AdvancedAdminConfig',#!!!place it before admin
+        # ... more apps 
+        'django.contrib.admin',
+        # ... so much more apps 
+    ]
+
 Instead of 'normal' AdminSite import advanced admin in ``urls.py``.
 Use it like 'normal' admin.site:
 
@@ -49,37 +66,48 @@ Usage
 Register additional content for index_view
 ------------------------------------------
 
-you may register some extra context in your admin.py:
+With ``register_index_extra(extra_context_callback)`` you can register some
+extra context in your admin.py. ``extra_context_callback`` gets the request
+object and has to return a dict with the desired extra context to be used in the
+``admin/index.html`` template.
+Could look like this:
 
 ::
-    
     # /my/project/mypp/admin.py
 
     from advanced_admin import admin_site
     
-    def additional_index_content(response):
+    def additional_index_content(request):
+        
         return {
                 'bla': 'blub',
                 'my': 'extra',
                 'ex': 'ample',
-                }
+        }
     admin_site.register_index_extra(additional_index_content)
     
     
 Register additional content for app_index_view
 ----------------------------------------------
 
-Registering extra content could be look like this, 
-in your <app-label> admin.py. Here <app_label> is 'myapp'.
+``register_app_index_extra(app_label, extra_context_callback)``: Same here, but 
+needs the app_label. Extra context can be used in the ``admin/app_index.html``.
+Example:
 
 ::
 
     # /my/project/myapp/admin.py
     
     from advanced_admin import admin_site
-    
-    def app_index(resonse):
-        return { 'extra': 'extra content bka bkub', }
+
+    from app_settings.models import AppSetting
+
+    def app_index(request):
+        color = AppSetting.get_setting("myapp", "preferred_index_color")
+        return { 
+            'index_color': color,
+            'extra': 'extra content bka bkub', 
+        }
     
     admin_site.register_app_index_extra('myapp', app_index)
 
@@ -87,8 +115,29 @@ in your <app-label> admin.py. Here <app_label> is 'myapp'.
 Register notifications in index_view
 ---------------------------------
 
-for example we have BlogEntries with Comments. We want to 
-show up an notification in admin index for each new Comment.
+Use ``reqister_notification(MyModel, message_callback)`` to register
+notifications for the index view.
+
+``message_callback`` has to accept an request objects as parameter and
+has to return a dict. If you use the the delivered notifications
+template the return dict must have 'msg' and 'url' as keys:
+
+::
+
+    # /my/project/my_app/admin.py
+
+    from advanced_admin import admin_site
+
+    def waether_msg_callback(request):
+        msg = "no sun today"
+        if weather.is_sunny():
+            msg = "sunny day"
+        return { 'msg': msg, 'url': '/admin/weather/forecast'}
+
+    admin_site.register_notification(Weather, weather_msg_callback)
+
+I use it to show up notifications in admin index 
+for each new Comment in my blog app:
 
 ::
 

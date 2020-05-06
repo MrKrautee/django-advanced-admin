@@ -2,7 +2,7 @@ from functools import update_wrapper
 from django.utils.translation import ugettext as _, ugettext_lazy
 from django.contrib import admin
 
-class AdminSiteWrapper(object):
+class AdminSiteWrapper:
     """  MISSING """
     def __init__(self, instance):
         self._instance = instance
@@ -38,6 +38,37 @@ class AdvancedAdminSite(AdminSiteWrapper):
             site.register(MyModel, MyModelAdmin)
     """
 
+    def register_app_index_extra(self, app_label, func_dict_return):
+        self._app_index_register.update({ app_label: func_dict_return, })
+
+    def register_index_extra(self, func_dict_return):
+        self._index_register.append(func_dict_return)
+
+    def register_notification(self, model, msg_callback):
+        """ register notifications for index view.
+            msg_callback has to accept an request objects as parameter and
+            has to return a dict. if you use the the delivered notifications
+            template the return dict must have 'msg' and 'url' as keys.
+
+            example:
+                def msg_callback(request):
+                    #... do something ....
+                    msg = "no sun today"
+                    if weather.is_sunny():
+                        msg = "sunny day"
+                    return { 'msg': msg, 'url': '/admin/weather/forecast'}
+        """
+        self._notification_callbacks.update(
+            { model: msg_callback }
+        )
+
+    def __init__(self, instance, **kwargs):
+        super().__init__(instance)
+        self._app_index_register = {}
+        self._index_register = []
+        self._notification_callbacks = {}
+        self._set_static()
+
     def _set_static(self):
         # Text to put at the end of each page's <title>.
         #self._instance.site_title = ugettext_lazy('Django Advanced Site Admin')
@@ -47,36 +78,6 @@ class AdvancedAdminSite(AdminSiteWrapper):
 
         # Text to put at the top of the admin index page.
         #self._instance.index_title = ugettext_lazy('Advanced Site Administration')
-
-        ## URL for the "View site" link at the top of each admin page.
-        #self._instance.site_url = '/'
-
-        #self._instance.login_form = None
-        #self._instance.index_template = None
-        #self._instance.app_index_template = None
-        #self._instance.login_template = None
-        #self._instance.logout_template = None
-        #self._instance.password_change_template = None
-        #self._instance.password_change_done_template = None
-
-    def register_app_index_extra(self, app_label, func_dict_return):
-        self._app_index_register.update({ app_label: func_dict_return, })
-
-    def register_index_extra(self, func_dict_return):
-        self._index_register.append(func_dict_return)
-
-    def register_notification(self, model, msg_callback):
-        """ MISSING """
-        self._notification_callbacks.update(
-            { model: msg_callback }
-        )
-
-    def __init__(self, instance, **kwargs):
-        self._instance = instance
-        self._app_index_register = {}
-        self._index_register = []
-        self._notification_callbacks = {}
-        self._set_static()
 
     def _mk_notifications(self, request):
         """ return notifications as list of strings """
@@ -90,69 +91,32 @@ class AdvancedAdminSite(AdminSiteWrapper):
                 msgs.append(tmp)
         return msgs
 
-    def index(self, request, extra_context=None):
-        if not extra_context:
-            extra_context={}
-        for e in self._index_register:
-            extra_context.update(e(request))
-        extra_context['notifications'] = self._mk_notifications(request)
-        return self._instance.index(request, extra_context)
+    def _advanced_index(self, index_func):
+        def wrap_index(request, extra_context=None):
+            if not extra_context:
+                extra_context={}
+            for e in self._index_register:
+                extra_context.update(e(request))
+            extra_context['notifications'] = self._mk_notifications(request)
+            return index_func(request, extra_context)
+        return wrap_index
 
-    def app_index(self, request, app_label, extra_context=None):
-        if not extra_context:
-            extra_context={}
-        if app_label in self._app_index_register.keys():
-            extra_context.update(self._app_index_register[app_label](request))
-        return self._instance.app_index(request, app_label, extra_context)
-
-    def get_urls(self):
-        from django.conf.urls import url, include
-        # Since this module gets imported in the application's root package,
-        # it cannot import models from other applications at the module level,
-        # and django.contrib.contenttypes.views imports ContentType.
-        from django.contrib.contenttypes import views as contenttype_views
-
-        def wrap(view, cacheable=False):
-            def wrapper(*args, **kwargs):
-                return self.admin_view(view, cacheable)(*args, **kwargs)
-            wrapper.admin_site = self
-            return update_wrapper(wrapper, view)
-
-        # Admin-site-wide views.
-        urlpatterns = [
-            url(r'^$', wrap(self.index), name='index'),
-            url(r'^login/$', self.login, name='login'),
-            url(r'^logout/$', wrap(self.logout), name='logout'),
-            url(r'^password_change/$', wrap(self.password_change, cacheable=True), name='password_change'),
-            url(r'^password_change/done/$', wrap(self.password_change_done, cacheable=True),
-                name='password_change_done'),
-            url(r'^jsi18n/$', wrap(self.i18n_javascript, cacheable=True), name='jsi18n'),
-            url(r'^r/(?P<content_type_id>\d+)/(?P<object_id>.+)/$', wrap(contenttype_views.shortcut),
-                name='view_on_site'),
-        ]
-
-        # Add in each model's views, and create a list of valid URLS for the
-        # app_index
-        valid_app_labels = []
-        for model, model_admin in self._registry.items():
-            urlpatterns += [
-                url(r'^%s/%s/' % (model._meta.app_label, model._meta.model_name), include(model_admin.urls)),
-            ]
-            if model._meta.app_label not in valid_app_labels:
-                valid_app_labels.append(model._meta.app_label)
-
-        # If there were ModelAdmins registered, we should have a list of app
-        # labels for which we need to allow access to the app_index view,
-        if valid_app_labels:
-            regex = r'^(?P<app_label>' + '|'.join(valid_app_labels) + ')/$'
-            urlpatterns += [
-                url(regex, wrap(self.app_index), name='app_list'),
-            ]
-        return urlpatterns
+    def _advanced_app_index(self, app_index_func):
+        def wrap_app_index(request, app_label, extra_context=None):
+            if not extra_context:
+                extra_context={}
+            if app_label in self._app_index_register.keys():
+                extra_context.update(self._app_index_register[app_label](request))
+            return app_index_func(request, app_label, extra_context)
+        return wrap_app_index
 
     @property
     def urls(self):
-        return self.get_urls(), 'admin', self.name
+        # replace admin_site methods to get the 
+        # added context in default admin_site
+        self._instance.app_index = self._advanced_app_index(self._instance.app_index)
+        self._instance.index = self._advanced_index(self._instance.index)
+        return self._instance.urls
 
 default_admin_site = admin.site
 admin_site = AdvancedAdminSite(default_admin_site)
