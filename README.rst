@@ -26,6 +26,7 @@ Be sure you place it before ``django.contrib.admin``. Otherwise the custom
 ``index.html`` template, used for the notifications will not be loaded.
 
 ::
+
     # my_project/my_project/settings.py
     .
     .
@@ -73,6 +74,7 @@ object and has to return a dict with the desired extra context to be used in the
 Could look like this:
 
 ::
+
     # /my/project/mypp/admin.py
 
     from advanced_admin import admin_site
@@ -99,7 +101,6 @@ Example:
     # /my/project/myapp/admin.py
     
     from advanced_admin import admin_site
-
     from app_settings.models import AppSetting
 
     def app_index(request):
